@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: pablo
+      POSTGRES_PASSWORD: tu_password_seguro
+      POSTGRES_DB: db_examen
+    networks:
+      - examen_jpsm
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == Worker-1
+      restart_policy:
+        condition: on-failure
+
+  web:
+    image: pablosanchezm/ex_u3_agenda:latest
+    ports:
+      - "5000:5000"
+    environment:
+      # El host 'db' corresponde al nombre del servicio arriba
+      DATABASE_URL: postgresql://pablo:tu_password_seguro@db:5432/db_examen
+    networks:
+      - examen_jpsm
+    depends_on:
+      - db
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+networks:
+  # La red es externa porque Jenkins la creará antes del despliegue
+  examen_jpsm:
+    external: true
+
+volumes:
+  db_data:
+  
