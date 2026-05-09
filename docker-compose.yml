@@ -21,7 +21,7 @@ services:
   web:
     image: pablosanchezm/ex_u3_agenda:latest
     ports:
-      - "5000:5000"
+      - "80:5000"
     environment:
       # El host 'db' corresponde al nombre del servicio arriba
       DATABASE_URL: postgresql://pablo:tu_password_seguro@db:5432/db_examen
@@ -44,4 +44,3 @@ networks:
 
 volumes:
   db_data:
-  
